@@ -6,7 +6,7 @@ public class CharacterController : MonoBehaviour
 {
     public float h = 2.0F;
     public float v = 2.0F;
-
+    [SerializeField]
     float yaw = 0f;
     float pitch = 0f;
     void Start()
