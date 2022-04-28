@@ -9,7 +9,7 @@ public class FireScript : MonoBehaviour
     public float weaponFrequency = 0.5f;
     float sliderZoomSize;
     [SerializeField]
-    int minBullet, maxBullet;
+    int minBullet, maxBullet, damage;
     int clickOnMouse = 0;
     [SerializeField]
     bool autoRifle;
@@ -17,7 +17,7 @@ public class FireScript : MonoBehaviour
     float zoom;
     float zoomSize = 60;
     [SerializeField]
-    GameObject gun, scope, fireButton, touchScope, gameManager;
+    GameObject gun, scope, fireButton, touchScope, gameManager, desktop;
     [SerializeField]
     Camera mainCam;
     Button fireBtn;
@@ -27,8 +27,6 @@ public class FireScript : MonoBehaviour
     Slider zoomSlider;
     AudioSource shotAudio;
     [SerializeField]
-    AudioClip sounds;
-
     bool isDesktop, isHandless;
     void Start()
     {
@@ -44,10 +42,6 @@ public class FireScript : MonoBehaviour
         isDesktop = true;
 #endif
 
-        if (isHandless)
-        {
-            FireButton();
-        }
     }
 
     // Update is called once per frame
@@ -71,28 +65,16 @@ public class FireScript : MonoBehaviour
     }
     void ClickMouse()
     {
-        if (!autoRifle)
+        if (Input.GetMouseButton(0) && Time.time > nextFire)
         {
-            if (Input.GetMouseButtonDown(0) && Time.time > nextFire)
-            {
-                nextFire = Time.time + weaponFrequency;
-                Shoot();
-            }
-        }
-        else
-        {
-            if (Input.GetMouseButton(0) && Time.time > nextFire)
-            {
-                nextFire = Time.time + weaponFrequency;
-                Shoot();
-            }
+            nextFire = Time.time + weaponFrequency;
+            Shoot();
         }
 
-        if (Input.GetKeyDown(KeyCode.Mouse1) && !anim.GetCurrentAnimatorStateInfo(0).IsName("Shot"))
+        if (Input.GetKeyDown(KeyCode.Mouse1) && !anim.GetCurrentAnimatorStateInfo(0).IsName("Shot") && !Input.GetMouseButton(0))
         {
             if (clickOnMouse == 0)
             {
-                anim.SetBool("Aim", true);
                 clickOnMouse++;
                 StartCoroutine(ZoomOpen());
             }
@@ -115,7 +97,7 @@ public class FireScript : MonoBehaviour
         mainCam.GetComponent<Camera>().fieldOfView = 60;
         clickOnMouse = 0;
     }
-    void Shoot()
+    public void Shoot()
     {
         if (minBullet < maxBullet)
         {
@@ -123,66 +105,17 @@ public class FireScript : MonoBehaviour
             {
                 sliderZoomSize = zoomSlider.value;
             }
-            shotAudio.Play();
+
             anim.SetBool("Shot", true);
             minBullet++;
             recoil.RecoilFire();
+            shotAudio.Play();
 
-            Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity))
-            {
-                if (hit.collider.tag == "Zombie")
-                {
-                    print(hit.collider.tag);
-                }
-            }
+            StartCoroutine(ShotRay());
         }
     }
     void AnimationController()
     {
-        if (minBullet >= maxBullet)
-        {
-            anim.SetBool("Reload", true);
-
-            if (anim.GetCurrentAnimatorStateInfo(0).IsName("Recharge"))
-            {
-                anim.SetBool("Shot", false);
-                anim.SetBool("Aim", false);
-                if (autoRifle)
-                {
-                    mainCam.GetComponent<Camera>().fieldOfView = 60;
-
-                    if (isHandless)
-                    {
-                        zoomSlider.value = 60;
-                    }
-                }
-                gun.SetActive(true);
-                scope.SetActive(false);
-            }
-
-            if (anim.GetCurrentAnimatorStateInfo(0).IsName("Recharge") && anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f)
-            {
-                anim.SetBool("Reload", false);
-                anim.SetBool("Aim", true);
-                minBullet = 0;
-                gun.SetActive(false);
-
-                if (isDesktop)
-                {
-                    scope.SetActive(true);
-                }
-
-                if (isHandless)
-                {
-                    touchScope.SetActive(true);
-                    zoomSlider.value = sliderZoomSize;
-                }
-            }
-        }
-
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("Shot"))
         {
             if (!autoRifle)
@@ -205,6 +138,46 @@ public class FireScript : MonoBehaviour
             }
         }
 
+        if (minBullet >= maxBullet)
+        {
+            if (shotAudio.isPlaying)
+            {
+                StartCoroutine(Sound());
+            }
+
+            if (anim.GetCurrentAnimatorStateInfo(0).IsName("Recharge"))
+            {
+
+                anim.SetBool("Shot", false);
+                anim.SetBool("Aim", false);
+
+                if (autoRifle)
+                {
+                    mainCam.GetComponent<Camera>().fieldOfView = 60;
+
+                    if (isHandless)
+                    {
+                        zoomSlider.value = 60;
+                    }
+                }
+
+                gun.SetActive(true);
+                scope.SetActive(false);
+            }
+
+            if (anim.GetCurrentAnimatorStateInfo(0).IsName("Recharge") && anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.8f)
+            {
+                anim.SetBool("Reload", false);
+                minBullet = 0;
+
+                if (isHandless)
+                {
+                    touchScope.SetActive(true);
+                    zoomSlider.value = sliderZoomSize;
+                }
+            }
+        }
+
         if (!autoRifle)
         {
             if (anim.GetCurrentAnimatorStateInfo(0).IsName("Aiming_Idle"))
@@ -219,24 +192,44 @@ public class FireScript : MonoBehaviour
             }
         }
 
-        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Aiming_Idle") && anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.05f)
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Aiming_Idle") && anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.03f)
         {
             gun.SetActive(false);
-            if (isDesktop)
-            {
-                scope.SetActive(true);
-            }
-
-            if (isHandless)
-            {
-                touchScope.SetActive(true);
-            }
-
+            scope.SetActive(true);
             mainCam.GetComponent<Camera>().fieldOfView = zoomSize;
+        }
+    }
+    IEnumerator Sound()
+    {
+        mainCam.GetComponent<AudioSource>().Play();
+        yield return new WaitForSeconds(0.8f);
+        anim.SetBool("Reload", true);
+        yield return new WaitForSeconds(100);
+    }
+    IEnumerator ShotRay()
+    {
+        yield return new WaitForSeconds(0.3f);
+
+        Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+        {
+            if (hit.collider.tag == "Head")
+            {
+                print(hit.collider.tag);
+                Destroy(hit.collider.gameObject);
+            }
+
+            if (hit.collider.tag == "Zombie")
+            {
+                print(hit.collider.tag);
+            }
         }
     }
     IEnumerator ZoomOpen()
     {
+        anim.SetBool("Aim", true);
         yield return new WaitForSeconds(0.25f);
         mainCam.GetComponent<Camera>().fieldOfView -= zoom;
         zoomSize = mainCam.GetComponent<Camera>().fieldOfView;
@@ -258,8 +251,8 @@ public class FireScript : MonoBehaviour
             scope.SetActive(false);
         }
     }
-    public void FireButton()
+    /*public void FireButton()
     {
         fireBtn.onClick.AddListener(Shoot);
-    }
+    }*/
 }

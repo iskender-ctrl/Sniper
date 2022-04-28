@@ -83,47 +83,47 @@ ScriptsOnlyBuild:
     - Class: 108
       Script: {instanceID: 0}
     - Class: 114
-      Script: {instanceID: 1538}
+      Script: {instanceID: 1532}
     - Class: 114
-      Script: {instanceID: 1556}
+      Script: {instanceID: 1550}
     - Class: 114
-      Script: {instanceID: 2152}
+      Script: {instanceID: 2150}
     - Class: 114
-      Script: {instanceID: 2570}
+      Script: {instanceID: 2566}
     - Class: 114
-      Script: {instanceID: 2646}
+      Script: {instanceID: 2642}
     - Class: 114
-      Script: {instanceID: 2780}
+      Script: {instanceID: 2776}
     - Class: 114
-      Script: {instanceID: 3052}
+      Script: {instanceID: 3050}
     - Class: 114
-      Script: {instanceID: 3946}
+      Script: {instanceID: 3940}
     - Class: 114
-      Script: {instanceID: 4054}
+      Script: {instanceID: 4048}
     - Class: 114
-      Script: {instanceID: 4100}
+      Script: {instanceID: 4094}
     - Class: 114
-      Script: {instanceID: 4312}
+      Script: {instanceID: 4306}
     - Class: 114
-      Script: {instanceID: 4580}
+      Script: {instanceID: 4576}
     - Class: 114
-      Script: {instanceID: 4926}
+      Script: {instanceID: 4922}
     - Class: 114
-      Script: {instanceID: 4972}
+      Script: {instanceID: 4968}
     - Class: 114
-      Script: {instanceID: 5010}
+      Script: {instanceID: 5006}
     - Class: 114
-      Script: {instanceID: 5064}
+      Script: {instanceID: 5060}
     - Class: 114
-      Script: {instanceID: 5562}
+      Script: {instanceID: 5564}
     - Class: 114
-      Script: {instanceID: 5712}
+      Script: {instanceID: 5714}
     - Class: 114
-      Script: {instanceID: 6020}
+      Script: {instanceID: 6022}
     - Class: 114
-      Script: {instanceID: 6742}
+      Script: {instanceID: 6748}
     - Class: 114
-      Script: {instanceID: 6904}
+      Script: {instanceID: 6912}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -241,7 +241,7 @@ ScriptsOnlyBuild:
     className: UnityOnPointerUpMessageListener
   - hash:
       serializedVersion: 2
-      Hash: f1d735cc1a21c3704ab52568f4fbfcf8
+      Hash: 91d258529db2b5060a913f2afcea1a21
     assemblyName: UnityEngine.TestRunner.dll
     namespaceName: UnityEngine.TestTools.TestRunner
     className: PlaymodeTestsController
@@ -667,7 +667,7 @@ ScriptsOnlyBuild:
     className: UnityOnPointerClickMessageListener
   - hash:
       serializedVersion: 2
-      Hash: 0674bdcebe00932a2eaa2c47279f7bb8
+      Hash: 843650a967ae598c9f160a05c85d373d
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: FireScript

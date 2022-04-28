@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Zombie
   - ZoomCamera
+  - Head
   layers:
   - Default
   - TransparentFX

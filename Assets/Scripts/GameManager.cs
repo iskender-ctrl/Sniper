@@ -2,12 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
 public class GameManager : MonoBehaviour
 {
-    bool isDesktop, isHandless;
+    bool isDesktop, isHandless, pressed;
     [SerializeField]
-    GameObject desktop, handless, touchScope, touchZoom, scope;
+    GameObject desktop, handless, touchScope, scope;
     [SerializeField]
     public float zoomCamera = 60;
     [SerializeField]
@@ -22,6 +21,7 @@ public class GameManager : MonoBehaviour
      };
     void Start()
     {
+        fireScript = GameObject.FindObjectOfType<FireScript>();
 #if UNITY_ANDROID
         isHandless = true;
 #endif
@@ -39,46 +39,54 @@ public class GameManager : MonoBehaviour
         if (isHandless == true)
         {
             handless.SetActive(true);
-            touchScope.SetActive(true);
         }
     }
     private void Update()
     {
-        if (isHandless)
+        for (int i = 0; i < cameras.Length; i++)
         {
-            for (int i = 0; i < cameras.Length; i++)
+            if (cameras[i].activeInHierarchy)
             {
-                if (cameras[i].activeInHierarchy)
-                {
-                    cameras[i].GetComponent<Camera>().fieldOfView = zoomCamera;
-                }
-            }
-
-            if (zoomCamera < 60)
-            {
-                touchZoom.SetActive(true);
-
-                for (int i = 0; i < guns.Length; i++)
-                {
-                    guns[i].SetActive(false);
-                }
-            }
-            else
-            {
-                touchZoom.SetActive(false);
-
-                for (int i = 0; i < guns.Length; i++)
-                {
-                    guns[i].SetActive(true);
-                }
+                cameras[i].GetComponent<Camera>().fieldOfView = zoomCamera;
             }
         }
+
+        if (zoomCamera < 60)
+        {
+            touchScope.SetActive(true);
+        }
+        else
+        {
+            touchScope.SetActive(false);
+        }
+
+        if (touchScope.activeInHierarchy == true)
+        {
+            for (int i = 0; i < guns.Length; i++)
+            {
+                guns[i].SetActive(false);
+            }
+        }
+        else
+        {
+            for (int i = 0; i < guns.Length; i++)
+            {
+                guns[i].SetActive(true);
+            }
+        }
+
         for (int i = 0; i < keyCodes.Length; i++)
         {
             if (Input.GetKeyDown(keyCodes[i]))
             {
                 SetNewWeapon(i);
             }
+        }
+
+        if (pressed && Time.time > fireScript.nextFire)
+        {
+            fireScript.nextFire = Time.time + fireScript.weaponFrequency;
+            fireScript.Shoot();
         }
     }
     public void Slider_Zoom(float zoom)
@@ -102,8 +110,13 @@ public class GameManager : MonoBehaviour
             weaponsList[i].SetActive(false);
         }
     }
-    public void NextButton()
+    public void ShotDown()
     {
+        pressed = true;
 
+    }
+    public void ShotUp()
+    {
+        pressed = false;
     }
 }
