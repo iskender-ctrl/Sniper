@@ -17,7 +17,7 @@ public class FireScript : MonoBehaviour
     float zoom;
     float zoomSize = 60;
     [SerializeField]
-    GameObject gun, scope, fireButton, touchScope, gameManager, desktop;
+    GameObject gun, scope, fireButton, touchScope, gameManager;
     [SerializeField]
     Camera mainCam;
     Button fireBtn;
@@ -27,7 +27,10 @@ public class FireScript : MonoBehaviour
     Slider zoomSlider;
     AudioSource shotAudio;
     [SerializeField]
+    ParticleSystem muzzle, scopeMuzzle;
+    [SerializeField]
     bool isDesktop, isHandless;
+    bool isRecharge;
     void Start()
     {
         shotAudio = GetComponent<AudioSource>();
@@ -41,7 +44,9 @@ public class FireScript : MonoBehaviour
 #if UNITY_STANDALONE_WIN
         isDesktop = true;
 #endif
-
+#if UNITY_WEBGL
+    isDesktop = true;
+#endif
     }
 
     // Update is called once per frame
@@ -56,9 +61,10 @@ public class FireScript : MonoBehaviour
         {
             scope.SetActive(false);
         }
+
         AnimationController();
 
-        if (!scope.activeInHierarchy)
+        if (!scope.activeInHierarchy && !touchScope.activeInHierarchy)
         {
             gun.SetActive(true);
         }
@@ -71,7 +77,7 @@ public class FireScript : MonoBehaviour
             Shoot();
         }
 
-        if (Input.GetKeyDown(KeyCode.Mouse1) && !anim.GetCurrentAnimatorStateInfo(0).IsName("Shot") && !Input.GetMouseButton(0))
+        if (Input.GetKeyDown(KeyCode.Mouse1) && !anim.GetCurrentAnimatorStateInfo(0).IsName("Shot") && !Input.GetMouseButton(0) && isRecharge == false)
         {
             if (clickOnMouse == 0)
             {
@@ -105,12 +111,17 @@ public class FireScript : MonoBehaviour
             {
                 sliderZoomSize = zoomSlider.value;
             }
+            muzzle.Play();
+
+            if (scope.activeInHierarchy || touchScope.activeInHierarchy)
+            {
+                scopeMuzzle.Play();
+            }
 
             anim.SetBool("Shot", true);
             minBullet++;
             recoil.RecoilFire();
             shotAudio.Play();
-
             StartCoroutine(ShotRay());
         }
     }
@@ -121,11 +132,7 @@ public class FireScript : MonoBehaviour
             if (!autoRifle)
             {
                 mainCam.GetComponent<Camera>().fieldOfView = 60;
-
-                if (isHandless)
-                {
-                    zoomSlider.value = 60;
-                }
+                zoomSlider.value = 60;
             }
         }
 
@@ -144,29 +151,26 @@ public class FireScript : MonoBehaviour
             {
                 StartCoroutine(Sound());
             }
+            anim.SetBool("Reload", true);
 
-            if (anim.GetCurrentAnimatorStateInfo(0).IsName("Recharge"))
+            if (anim.GetCurrentAnimatorStateInfo(0).IsTag("Recharge"))
             {
-
+                isRecharge = true;
                 anim.SetBool("Shot", false);
                 anim.SetBool("Aim", false);
-
                 if (autoRifle)
                 {
                     mainCam.GetComponent<Camera>().fieldOfView = 60;
-
-                    if (isHandless)
-                    {
-                        zoomSlider.value = 60;
-                    }
+                    zoomSlider.value = 60;
                 }
 
                 gun.SetActive(true);
                 scope.SetActive(false);
             }
 
-            if (anim.GetCurrentAnimatorStateInfo(0).IsName("Recharge") && anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.8f)
+            if (anim.GetCurrentAnimatorStateInfo(0).IsTag("Recharge") && anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.8f)
             {
+                isRecharge = false;
                 anim.SetBool("Reload", false);
                 minBullet = 0;
 
@@ -187,7 +191,10 @@ public class FireScript : MonoBehaviour
             }
             else
             {
-                gun.SetActive(true);
+                if (isDesktop)
+                {
+                    gun.SetActive(true);
+                }
                 scope.SetActive(false);
             }
         }
@@ -203,8 +210,6 @@ public class FireScript : MonoBehaviour
     {
         mainCam.GetComponent<AudioSource>().Play();
         yield return new WaitForSeconds(0.8f);
-        anim.SetBool("Reload", true);
-        yield return new WaitForSeconds(100);
     }
     IEnumerator ShotRay()
     {
@@ -251,8 +256,4 @@ public class FireScript : MonoBehaviour
             scope.SetActive(false);
         }
     }
-    /*public void FireButton()
-    {
-        fireBtn.onClick.AddListener(Shoot);
-    }*/
 }

@@ -243,7 +243,7 @@ AnimatorState:
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
   m_Motion: {fileID: 7400000, guid: dd0893fac88e3604f9c7c8e51b9d7b57, type: 2}
-  m_Tag: 
+  m_Tag: Recharge
   m_SpeedParameter: 
   m_MirrorParameter: 
   m_CycleOffsetParameter: 

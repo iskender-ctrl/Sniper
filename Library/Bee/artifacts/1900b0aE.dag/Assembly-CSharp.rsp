@@ -383,6 +383,14 @@
 "Assets/TextMesh Pro/Examples & Extras/Scripts/VertexShakeB.cs"
 "Assets/TextMesh Pro/Examples & Extras/Scripts/VertexZoom.cs"
 "Assets/TextMesh Pro/Examples & Extras/Scripts/WarpTextExample.cs"
+"Assets/Unique_Projectiles_Volume_1/Scripts/ParticleSystemController/ParticleSystemController.cs"
+"Assets/Unique_Projectiles_Volume_1/Scripts/ParticleSystemController/ParticleSystemControllerEditor.cs"
+"Assets/Unique_Projectiles_Volume_1/Scripts/ParticleSystemController/SaveParticleSystemScript.cs"
+"Assets/Unique_Projectiles_Volume_1/Scripts/ParticleSystemController/Serializables.cs"
+"Assets/Unique_Projectiles_Volume_1/Scripts/UniqueProjectiles/CameraShakeSimpleScript.cs"
+"Assets/Unique_Projectiles_Volume_1/Scripts/UniqueProjectiles/ProjectileMoveScript.cs"
+"Assets/Unique_Projectiles_Volume_1/Scripts/UniqueProjectiles/RotateToMouseScript.cs"
+"Assets/Unique_Projectiles_Volume_1/Scripts/UniqueProjectiles/SpawnProjectilesScript.cs"
 -langversion:9.0
 
 /deterministic
